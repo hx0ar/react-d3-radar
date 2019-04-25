@@ -13,7 +13,7 @@ type RadarAxisProps = {
 
 const defaultRadarAxisStyle = {
   axisOverreach: 1.1,
-  labelOverreach: 1.2,
+  labelOverreach: 1.23,
   fontSize: 10,
   fontFamily: 'sans-serif',
   textFill: 'black',
@@ -32,27 +32,34 @@ export default function RadarAxis(props: RadarAxisProps) {
   } = {...defaultRadarAxisStyle, style};
   const xFactor = Math.cos(offsetAngle - Math.PI / 2);
   const yFactor = Math.sin(offsetAngle - Math.PI / 2);
-
+  const lineToX = scale(domainMax * axisOverreach) * xFactor;
+  const lineToY = scale(domainMax * axisOverreach) * yFactor;
+  let labelX = scale(domainMax * labelOverreach) * xFactor;
+  let labelY = scale(domainMax * labelOverreach) * yFactor;
   return (
     <g>
       <line
         x1={0}
         y1={0}
-        x2={scale(domainMax * axisOverreach) * xFactor}
-        y2={scale(domainMax * axisOverreach) * yFactor}
+        x2={lineToX}
+        y2={lineToY}
         stroke={color}
         strokeWidth={axisWidth}
       />
       <text
-        x={scale(domainMax * labelOverreach) * xFactor}
-        y={scale(domainMax * labelOverreach) * yFactor}
+        x={labelX}
+        y={labelY}
         fontSize={fontSize}
         fontFamily={fontFamily}
         fill={textFill}
         textAnchor={'middle'}
         dy={'0.35em'}
       >
-        {label}
+        {label.split('\n').map((part, index) => (
+          <tspan x={labelX} dy={index === 0 ? '0.6em' : '1.2em'} key={part}>
+            {part}
+          </tspan>
+        ))}
       </text>
     </g>
   );
